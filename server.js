@@ -1,6 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
+// API ROUTES
+const usersRoutes = require("./routes/api/users");
+const postsRoutes = require("./routes/api/posts");
+const profileRoutes = require("./routes/api/profile");
+
 const app = express();
 
 // DATABASE CONFIG & CONNECTION
@@ -14,7 +19,13 @@ app.get("/", function(req, res) {
   res.send("hello!");
 });
 
+// API ROUTES
+app.use("/api/posts", postsRoutes);
+app.use("/api/users", usersRoutes);
+app.use("/api/profile", profileRoutes);
+
 const port = process.env.PORT || 3000;
+
 app.listen(port, () => {
   console.log(`Now listening to port ${port}`);
 });
