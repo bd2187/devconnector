@@ -24,26 +24,90 @@ router.get("/test", function(req, res) {
   @desc   
   @access Private
 */
-router.get(
-  "/profile",
-  passport.authenticate("jwt", { session: false }),
-  function(req, res) {
-    const errors = {};
+router.get("/", passport.authenticate("jwt", { session: false }), function(
+  req,
+  res
+) {
+  const errors = {};
 
-    // Find user
-    Profile.findOne({ user: req.user.id })
-      .then(function(profile) {
-        if (!profile) {
-          errors.noprofile = "There is no profile for this user";
-          return res.status(404).json(errors);
+  // Find user
+  Profile.findOne({ user: req.user.id })
+    .then(function(profile) {
+      if (!profile) {
+        errors.noprofile = "There is no profile for this user";
+        return res.status(404).json(errors);
+      }
+
+      res.json(profile);
+    })
+    .catch(function(err) {
+      return res.status(400).json(err);
+    });
+});
+
+/*
+  @route  POST api/profile/
+  @desc   Creat or edit user profile
+  @access Private
+*/
+
+router.post("/", passport.authenticate("jwt", { session: false }), function(
+  req,
+  res
+) {
+  // Get fields
+  const profileFields = {};
+  profileFields.user = req.user.id;
+  if (req.body.handle) profileFields.handle = req.body.handle;
+  if (req.body.company) profileFields.company = req.body.company;
+  if (req.body.website) profileFields.website = req.body.website;
+  if (req.body.location) profileFields.location = req.body.location;
+  if (req.body.bio) profileFields.bio = req.body.bio;
+  if (req.body.status) profileFields.status = req.body.status;
+  if (req.body.githubusername) {
+    profileFields.githubusername = req.body.githubusername;
+  }
+
+  // Skills -- split into array
+  if (typeof req.body.skils !== undefined) {
+    profileFields.skills = req.body.skills.split(",");
+  }
+
+  // Social
+  profileFields.social = {};
+  if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
+  if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
+  if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
+  if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
+  if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
+
+  Profile.findOne({ user: req.user.id }).then(function(profile) {
+    if (profile) {
+      // If profile exists, update the profile
+      Profile.findOneAndUpdate(
+        { user: req.user.id },
+        { $set: profileFields },
+        { new: true }
+      ).then(function(profile) {
+        return res.json(profile);
+      });
+    } else {
+      // Otherwise, create profile
+
+      // Check if handle exists
+      Profile.findOne({ handle: profileFields.handle }).then(function(profile) {
+        if (profile) {
+          errors.handle = "That handle already exists";
+          return res.status(400).json(errors);
         }
 
-        res.json(profile);
-      })
-      .catch(function(err) {
-        return res.status(400).json(err);
+        // Save Profile
+        new Profile(profileFields).save().then(function(newProfile) {
+          return res.json(newProfile);
+        });
       });
-  }
-);
+    }
+  });
+});
 
 module.exports = router;
