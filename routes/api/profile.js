@@ -28,7 +28,21 @@ router.get(
   "/profile",
   passport.authenticate("jwt", { session: false }),
   function(req, res) {
+    const errors = {};
+
     // Find user
+    Profile.findOne({ user: req.user.id })
+      .then(function(profile) {
+        if (!profile) {
+          errors.noprofile = "There is no profile for this user";
+          return res.status(404).json(errors);
+        }
+
+        res.json(profile);
+      })
+      .catch(function(err) {
+        return res.status(400).json(err);
+      });
   }
 );
 
