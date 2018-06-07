@@ -194,4 +194,37 @@ router.post("/", passport.authenticate("jwt", { session: false }), function(
   });
 });
 
+/*
+  @route  POST api/profile/experience/
+  @desc   Add experience to profile
+  @access Private
+*/
+router.post(
+  "/experience",
+  passport.authenticate("jwt", { session: false }),
+  function(req, res) {
+    Profile.findOne({ user: req.user.id }).then(function(profile) {
+      const newExperience = {
+        title: req.body.title,
+        company: req.body.company,
+        location: req.body.location,
+        from: req.body.from,
+        to: req.body.to,
+        current: req.body.current,
+        description: req.body.description
+      };
+
+      if (!profile) {
+        return res.status(404).json({ msg: "profile not found" });
+      }
+
+      profile.experience = [newExperience, ...profile.experience];
+
+      profile.save().then(function(profile) {
+        return res.json(profile);
+      });
+    });
+  }
+);
+
 module.exports = router;
