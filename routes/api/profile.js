@@ -235,4 +235,40 @@ router.post(
   }
 );
 
+/*
+  @route  POST api/profile/education/
+  @desc   Add education to profile
+  @access Private
+*/
+
+router.post(
+  "/education",
+  passport.authenticate("jwt", { session: false }),
+  function(req, res) {
+    console.log("USER", req.user);
+
+    Profile.findOne({ user: req.user.id }).then(function(profile) {
+      if (!profile) {
+        return res.status(404).json({ msg: "Profile not found" });
+      }
+
+      var newEducation = {
+        school: req.body.school,
+        degree: req.body.degree,
+        fieldOfStudy: req.body.fieldOfStudy,
+        from: req.body.from,
+        to: req.body.to,
+        current: req.body.current,
+        description: req.body.description
+      };
+
+      profile.education = [newEducation, ...profile.education];
+
+      profile.save().then(function(profile) {
+        return res.json(profile);
+      });
+    });
+  }
+);
+
 module.exports = router;
