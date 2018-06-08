@@ -6,6 +6,7 @@ const passport = require("passport");
 // Load Validation
 const validateProfileInput = require("../../validation/profile");
 const validateExperienceInput = require("../../validation/experience");
+const validateEducationInput = require("../../validation/education");
 
 // Load User and Profile models
 const User = require("../../models/User");
@@ -245,7 +246,12 @@ router.post(
   "/education",
   passport.authenticate("jwt", { session: false }),
   function(req, res) {
-    console.log("USER", req.user);
+    const { errors, isValid } = validateEducationInput(req.body);
+
+    // Check validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
 
     Profile.findOne({ user: req.user.id }).then(function(profile) {
       if (!profile) {
