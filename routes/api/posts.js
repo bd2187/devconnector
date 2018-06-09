@@ -17,6 +17,7 @@ const validatePostInput = require("../../validation/post");
 */
 router.get("/", function(req, res) {
   Posts.find({})
+    .sort({ date: -1 })
     .then(function(posts) {
       if (!posts) {
         return res.status(404).json({ msg: "Error fetching posts" });
@@ -30,11 +31,24 @@ router.get("/", function(req, res) {
 });
 
 /*
+  @route  GET api/posts/:id
+  @desc   Get post by id
+  @access Public
+*/
+router.get("/:id", function(req, res) {
+  console.log(req.params.id);
+  Posts.findById(req.params.id, function(err, post) {
+    return err
+      ? res.status(404).json({ status: "failed", err })
+      : res.json(post);
+  });
+});
+
+/*
   @route  POST api/posts/
   @desc   Create post
   @access Private
 */
-
 router.post("/", passport.authenticate("jwt", { session: false }), function(
   req,
   res
