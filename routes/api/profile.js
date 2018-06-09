@@ -286,21 +286,28 @@ router.delete(
   "/experience/:id",
   passport.authenticate("jwt", { session: false }),
   function(req, res) {
-    Profile.findOne({ user: req.user.id }).then(function(profile) {
-      if (!profile) {
-        return res.status(404).json({ msg: "Profile not found" });
-      }
+    Profile.findOne({ user: req.user.id })
+      .then(function(profile) {
+        if (!profile) {
+          return res.status(404).json({ msg: "Profile not found" });
+        }
 
-      var experienceID = req.params.id;
+        var experienceID = req.params.id;
 
-      profile.experience = profile.experience.filter(function(exp) {
-        return exp.id !== experienceID ? exp : null;
-      });
+        profile.experience = profile.experience.filter(function(exp) {
+          return exp.id !== experienceID ? exp : null;
+        });
 
-      profile.save().then(function(profile) {
-        return res.json(profile);
-      });
-    });
+        profile.save().then(function(profile) {
+          return res.json(profile);
+        });
+      })
+      .catch(err =>
+        res.status(404).json({
+          msg: "There was an issue with deleting the education",
+          err
+        })
+      );
   }
 );
 
@@ -313,21 +320,28 @@ router.delete(
   "/education/:id",
   passport.authenticate("jwt", { session: false }),
   function(req, res) {
-    Profile.findOne({ user: req.user.id }).then(function(profile) {
-      if (!profile) {
-        return res.status(404).json({ msg: "Profile not found" });
-      }
+    Profile.findOne({ user: req.user.id })
+      .then(function(profile) {
+        if (!profile) {
+          return res.status(404).json({ msg: "Profile not found" });
+        }
 
-      var educationID = req.params.id;
+        var educationID = req.params.id;
 
-      profile.education = profile.education.filter(function(education) {
-        return education.id !== educationID ? education : null;
-      });
+        profile.education = profile.education.filter(function(education) {
+          return education.id !== educationID ? education : null;
+        });
 
-      profile.save().then(function(profile) {
-        return res.json(profile);
-      });
-    });
+        profile.save().then(function(profile) {
+          return res.json(profile);
+        });
+      })
+      .catch(err =>
+        res.status(404).json({
+          msg: "There was an issue with deleting the education",
+          err
+        })
+      );
   }
 );
 
