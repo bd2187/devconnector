@@ -345,4 +345,21 @@ router.delete(
   }
 );
 
+/*
+  @route  DELETE api/profile/
+  @desc   Delete user and profile
+  @access Private
+*/
+
+router.delete("/", passport.authenticate("jwt", { session: false }), function(
+  req,
+  res
+) {
+  Profile.findOneAndRemove({ user: req.user.id }).then(function() {
+    User.findOneAndRemove({ _id: req.user.id }).then(function() {
+      return res.json({ success: true });
+    });
+  });
+});
+
 module.exports = router;
