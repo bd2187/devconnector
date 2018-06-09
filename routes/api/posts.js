@@ -12,14 +12,21 @@ const validatePostInput = require("../../validation/post");
 
 /*
   @route  GET api/posts/
-  @desc   
+  @desc   Get post
   @access Public
 */
 router.get("/", function(req, res) {
-  res.json({
-    status: "success",
-    message: "posts api"
-  });
+  Posts.find({})
+    .then(function(posts) {
+      if (!posts) {
+        return res.status(404).json({ msg: "Error fetching posts" });
+      }
+
+      return res.json(posts);
+    })
+    .catch(function(err) {
+      return res.status(400).json({ msg: "Error fetching posts", err });
+    });
 });
 
 /*
@@ -39,7 +46,7 @@ router.post("/", passport.authenticate("jwt", { session: false }), function(
     return res.status(400).json(errors);
   }
 
-  const newPost = new Post({
+  const newPost = new Posts({
     text: req.body.text,
     name: req.body.name,
     avatar: req.body.avatar,
