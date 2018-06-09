@@ -277,4 +277,58 @@ router.post(
   }
 );
 
+/*
+  @route  DELETE api/profile/experience/:id
+  @desc   Delete Experience
+  @access Private
+*/
+router.delete(
+  "/experience/:id",
+  passport.authenticate("jwt", { session: false }),
+  function(req, res) {
+    Profile.findOne({ user: req.user.id }).then(function(profile) {
+      if (!profile) {
+        return res.status(404).json({ msg: "Profile not found" });
+      }
+
+      var experienceID = req.params.id;
+
+      profile.experience = profile.experience.filter(function(exp) {
+        return exp.id !== experienceID ? exp : null;
+      });
+
+      profile.save().then(function(profile) {
+        return res.json(profile);
+      });
+    });
+  }
+);
+
+/*
+  @route  DELETE api/profile/education/:id
+  @desc   Delete Education
+  @access Private
+*/
+router.delete(
+  "/education/:id",
+  passport.authenticate("jwt", { session: false }),
+  function(req, res) {
+    Profile.findOne({ user: req.user.id }).then(function(profile) {
+      if (!profile) {
+        return res.status(404).json({ msg: "Profile not found" });
+      }
+
+      var educationID = req.params.id;
+
+      profile.education = profile.education.filter(function(education) {
+        return education.id !== educationID ? education : null;
+      });
+
+      profile.save().then(function(profile) {
+        return res.json(profile);
+      });
+    });
+  }
+);
+
 module.exports = router;
