@@ -77,7 +77,6 @@ router.post("/", passport.authenticate("jwt", { session: false }), function(
   @desc   Delete post
   @access Private
 */
-
 router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
@@ -97,6 +96,72 @@ router.delete(
         return post
           .remove()
           .then(() => res.json({ status: "success", msg: "deleted post" }));
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
+
+/*
+  @route  POST api/posts/like/:id
+  @desc   Like like
+  @access Private
+*/
+router.post(
+  "/like/:id",
+  passport.authenticate("jwt", { session: false }),
+  function(req, res) {
+    Profile.findOne({ user: req.user.id })
+      .then(function(profile) {
+        return Posts.findById(req.params.id);
+      })
+      .then(function(post) {
+        var filteredLikes = post.likes.filter(
+          like => like.user.toString() === req.user.id
+        );
+
+        if (filteredLikes.length > 0) {
+          return res
+            .status(400)
+            .json({ status: "fail", msg: "user already liked post" });
+        } else {
+          post.likes = [{ user: req.user.id }, ...post.likes];
+
+          post.save().then(post => res.json(post));
+        }
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
+
+/*
+  @route  POST api/posts/unlike/:id
+  @desc   Unlike post
+  @access Private  
+*/
+router.post(
+  "/unlike/:id",
+  passport.authenticate("jwt", { session: false }),
+  function(req, res) {
+    Profile.findOne({ user: req.user.id })
+      .then(function(profile) {
+        return Posts.findById(req.params.id);
+      })
+      .then(function(post) {
+        var filteredLikes = post.likes.filter(
+          like => like.user.toString() === req.user.id
+        );
+
+        if (filteredLikes.length === 0) {
+          return res
+            .status(400)
+            .json({ status: "fail", msg: "user already unliked post" });
+        }
+
+        post.likes = post.likes.filter(
+          like => like.user.toString() !== req.user.id
+        );
+
+        post.save().then(post => res.json(post));
       })
       .catch(err => res.status(404).json(err));
   }
