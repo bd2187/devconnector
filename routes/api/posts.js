@@ -126,7 +126,7 @@ router.post(
         } else {
           post.likes = [{ user: req.user.id }, ...post.likes];
 
-          post.save().then(post => res.json(post));
+          return post.save().then(post => res.json(post));
         }
       })
       .catch(err => res.status(404).json(err));
@@ -162,6 +162,71 @@ router.post(
         );
 
         post.save().then(post => res.json(post));
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
+
+/*
+  @route  POST api/posts/comment/:id
+  @desc   Add comment to post
+  @access Private  
+*/
+router.post(
+  "/comment/:id",
+  passport.authenticate("jwt", { session: false }),
+  function(req, res) {
+    const { errors, isValid } = validatePostInput(req.body);
+
+    // Check validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    Posts.findOne({ _id: req.params.id })
+      .then(function(post) {
+        var newComment = {
+          user: req.user.id,
+          text: req.body.text,
+          name: req.user.name,
+          avatar: req.user.avatar
+        };
+
+        post.comments = [newComment, ...post.comments];
+
+        return post.save().then(post => res.json(post));
+      })
+      .catch(err => res.status(404).json({ status: "fail", msg: err }));
+  }
+);
+
+/*
+  @route  DELETE api/posts/comment/:postID/:commentID
+  @desc   Delete comment from post
+  @access Private  
+*/
+
+router.delete(
+  "/comment/:postID/:commentID",
+  passport.authenticate("jwt", { session: false }),
+  function(req, res) {
+    Posts.findOne({ _id: req.params.postID })
+      .then(function(post) {
+        var usersCommentToDelete = post.comments.filter(
+          comment => comment._id.toString() === req.params.commentID
+        )[0];
+
+        if (!usersCommentToDelete) {
+          return res
+            .status(404)
+            .json({ status: "fail", msg: "Comment does not exist" });
+        }
+
+        post.comments = post.comments.filter(
+          comment => comment._id.toString() !== req.params.commentID
+        );
+
+        return post.save().then(post => res.json(post));
       })
       .catch(err => res.status(404).json(err));
   }
