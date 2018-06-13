@@ -32,7 +32,7 @@ app.use("/api/posts", postsRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/profile", profileRoutes);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 app.listen(port, () => {
   console.log(`Now listening to port ${port}`);
