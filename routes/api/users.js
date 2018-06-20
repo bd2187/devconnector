@@ -26,7 +26,7 @@ router.get("/", function(req, res) {
 });
 
 /*
-  @route  GET api/users/register
+  @route  POST api/users/register
   @desc Register user   
   @access Public
 */
