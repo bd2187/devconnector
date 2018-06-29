@@ -20,6 +20,7 @@
   },
   "proxy": "http://localhost:5000",
   "devDependencies": {
-    "classnames": "^2.2.6"
+    "classnames": "^2.2.6",
+    "jwt-decode": "^2.2.0"
   }
 }
