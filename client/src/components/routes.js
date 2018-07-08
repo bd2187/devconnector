@@ -5,15 +5,19 @@ import Landing from "./layout/Landing";
 import Register from "./auth/Register";
 import Login from "./auth/Login";
 import Dashboard from "./dashboard/Dashboard";
+import CreateProfile from "./create-profile/CreateProfile";
 import PrivateRoute from "./common/PrivateRoute";
 
 const routes = (
   <Switch>
     <Route exact path="/" component={Landing} />
     <div className="container">
-      <Route path="/register" component={Register} />
-      <Route path="/login" component={Login} />
-      <PrivateRoute path="/dashboard" component={Dashboard} />
+      <Route exact path="/register" component={Register} />
+      <Route exact path="/login" component={Login} />
+      <Switch>
+        <PrivateRoute path="/dashboard" component={Dashboard} />
+        <PrivateRoute path="/create-profile" component={CreateProfile} />
+      </Switch>
     </div>
   </Switch>
 );
