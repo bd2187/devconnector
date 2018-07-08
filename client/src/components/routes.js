@@ -5,6 +5,7 @@ import Landing from "./layout/Landing";
 import Register from "./auth/Register";
 import Login from "./auth/Login";
 import Dashboard from "./dashboard/Dashboard";
+import PrivateRoute from "./common/PrivateRoute";
 
 const routes = (
   <Switch>
@@ -12,7 +13,7 @@ const routes = (
     <div className="container">
       <Route path="/register" component={Register} />
       <Route path="/login" component={Login} />
-      <Route path="/dashboard" component={Dashboard} />
+      <PrivateRoute path="/dashboard" component={Dashboard} />
     </div>
   </Switch>
 );
