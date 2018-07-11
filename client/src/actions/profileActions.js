@@ -5,6 +5,7 @@ import {
   CLEAR_CURRENT_PROFILE,
   GET_ERRORS
 } from "./types";
+import { logoutUser } from "./authActions";
 
 // Get Current Profile
 export const getCurrentProfile = data => {
@@ -14,7 +15,7 @@ export const getCurrentProfile = data => {
     return axios
       .get("/api/profile")
       .then(res => {
-        dispatch({ type: GET_PROFILE, payload: res });
+        dispatch({ type: GET_PROFILE, payload: res.data });
       })
       .catch(err => {
         dispatch({ type: GET_PROFILE, payload: {} });
@@ -33,6 +34,22 @@ export const createProfile = (profileData, history) => {
       .catch(err => {
         dispatch({ type: GET_ERRORS, payload: err.response.data });
       });
+  };
+};
+
+// Delete Account & Profile
+export const deleteAccount = () => {
+  return function(dispatch) {
+    if (window.confirm("Are you sure? This cannot be undone.")) {
+      axios
+        .delete("/api/profile/")
+        .then(() => {
+          dispatch(logoutUser());
+        })
+        .catch(err => {
+          dispatch({ type: GET_ERRORS, payload: err.response.data });
+        });
+    }
   };
 };
 
