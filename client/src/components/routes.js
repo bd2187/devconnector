@@ -6,6 +6,7 @@ import Register from "./auth/Register";
 import Login from "./auth/Login";
 import Dashboard from "./dashboard/Dashboard";
 import CreateProfile from "./create-profile/CreateProfile";
+import EditProfile from "./edit-profile/EditProfile";
 import PrivateRoute from "./common/PrivateRoute";
 
 const routes = (
@@ -17,6 +18,7 @@ const routes = (
       <Switch>
         <PrivateRoute path="/dashboard" component={Dashboard} />
         <PrivateRoute path="/create-profile" component={CreateProfile} />
+        <PrivateRoute path="/edit-profile" component={EditProfile} />
       </Switch>
     </div>
   </Switch>
