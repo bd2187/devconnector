@@ -1,11 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 
 import TextFieldGroup from "../common/TextFieldGroup";
 import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
 import InputGroup from "../common/InputGroup";
 import SelectListGroup from "../common/SelectListGroup";
+
+import { createProfile } from "../../actions/profileActions";
 
 class CreateProfile extends Component {
   constructor(props) {
@@ -32,9 +35,20 @@ class CreateProfile extends Component {
     this.onChange = this.onChange.bind(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
+    }
+  }
+
   onSubmit(e) {
     e.preventDefault();
-    console.log("submit");
+
+    const profileData = { ...this.state };
+    delete profileData.displaySocialInputs;
+    delete profileData.errors;
+
+    this.props.createProfile(profileData, this.props.history);
   }
 
   onChange(e) {
@@ -201,6 +215,7 @@ class CreateProfile extends Component {
 
                 <div className="mb-3">
                   <button
+                    type="button"
                     className="btn btn-light"
                     onClick={() => {
                       this.setState(prevState => ({
@@ -230,14 +245,23 @@ class CreateProfile extends Component {
 
 CreateProfile.propTypes = {
   profile: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  errors: PropTypes.object.isRequired,
+  createProfile: PropTypes.func.isRequired
 };
 
-const mapStateToPros = state => {
+const mapStateToProps = state => {
   return { profile: state.profile, errors: state.errors };
 };
 
+const mapDispatchToProps = dispatch => {
+  return {
+    createProfile: function(profileData, history) {
+      dispatch(createProfile(profileData, history));
+    }
+  };
+};
+
 export default connect(
-  mapStateToPros,
-  null
-)(CreateProfile);
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(CreateProfile));
