@@ -7,6 +7,7 @@ import Login from "./auth/Login";
 import Dashboard from "./dashboard/Dashboard";
 import CreateProfile from "./create-profile/CreateProfile";
 import EditProfile from "./edit-profile/EditProfile";
+import AddExperience from "./add-credentials/AddExperience";
 import PrivateRoute from "./common/PrivateRoute";
 
 const routes = (
@@ -19,6 +20,7 @@ const routes = (
         <PrivateRoute path="/dashboard" component={Dashboard} />
         <PrivateRoute path="/create-profile" component={CreateProfile} />
         <PrivateRoute path="/edit-profile" component={EditProfile} />
+        <PrivateRoute path="/add-experience" component={AddExperience} />
       </Switch>
     </div>
   </Switch>
